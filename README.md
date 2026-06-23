@@ -51,26 +51,26 @@ flowchart LR
 
 Para poder ejecutar este laboratorio es necesario contar con los siguientes prerrequisitos:
 
-1. **Políticas** para autorizar a algunas instancias a consumir los servicios de ia
+1. **Políticas** para autorizar el consumo de servicios de IA desde la base de datos.
 
     > Si no existe, podemos crear las políticas necesarias siguiendo [este tutorial](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20una%20pol%C3%ADtica.md)
 
-1. **Un compartment** que nos permitirá agrupar los recursos creados.
+2. **Un compartment** que permitirá agrupar los recursos creados para el laboratorio.
 
-    > Si no tenemos un compartmenr, podemos crear un compartment siguiendo [el siguiente tutorial](../oci-console-tutorials/Creación%20de%20un%20compartment.md).
+    > Si no tienes un compartment, puedes crearlo siguiendo [este tutorial](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20un%20compartment.md).
 
-2. **Base de datos Oracle con capacidades de IA**
+3. **Base de datos Oracle con capacidades de IA**
     
     Es necesario contar con una base de datos **Oracle Database 23ai o 26ai** que funcionará como base de conocimiento, puede ser de tipo:
     
     - Transaction Processing
     - Data Warehouse
 
-    > Si no tenemos una base de datos, podemos crear una base de datos autonomous 26ai [siguiendo este tutorial](../oci-console-tutorials/Crear%20base%20de%20datos%20autónoma.md).
+    > Si no tienes una base de datos, puedes crear una base de datos autónoma 26ai siguiendo [este tutorial](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Crear%20base%20de%20datos%20aut%C3%B3noma.md).
     
-3. **Credenciales para acceso a servicios de Inteligencia Artificial**
+4. **Credenciales para acceso a servicios de IA**
     
-    Es importante contar con un API Key creada en la cuenta de OCI que nos permitirán realizar solicitudes desde la base de datos a los servicios de inteligencia artificial.
+    Es importante contar con una API key creada en la cuenta de OCI. Esta credencial permite realizar solicitudes desde la base de datos a los servicios de inteligencia artificial.
     
     La configuración del API Key se ve de la siguiente manera.
 
@@ -79,10 +79,14 @@ Para poder ejecutar este laboratorio es necesario contar con los siguientes prer
     user=ocid1.user.oc1..
     fingerprint=24:
     tenancy=ocid1.tenancy.
-    region=us-chicago-1
+    region=us-ashburn-1
     ```
 
-    > Si no tenemos credenciales, vamos a crear y descargar las credenciales [siguiendo este tutorial](../oci-console-tutorials/Creación%20de%20credenciales.md).
+    > Si no tienes credenciales, puedes crearlas y descargarlas siguiendo [este tutorial](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20credenciales.md).
+
+5. **URLs del PDF y del modelo ONNX**
+
+    El script actualizado usa URLs preautenticadas de Object Storage en la región `us-ashburn-1`. Estos enlaces permiten descargar el PDF y el modelo ONNX necesarios para el laboratorio.
     
 
 ## Paso 1: Ingresar a la consola SQL
@@ -219,7 +223,7 @@ Ejecuta el siguiente bloque para confirmar que la base de datos puede llamar al 
 
 <u>Antes de ejecutar:</u> revisa y reemplaza estos dos valores dentro del bloque SQL:
 
-- `p_region`: si tu base de datos no está en Chicago, reemplaza `'us-chicago-1'` por el identificador de tu región. Para encontrarlo, entra a la guía oficial [Regions and Availability Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm) y usa el valor de la columna **Region Identifier**. Por ejemplo, Bogotá aparece como `sa-bogota-1`.
+- `p_region`: este laboratorio usa Ashburn por defecto, por eso el script trae `'us-ashburn-1'`. Si tu base de datos está en otra región, reemplaza ese valor por el identificador correcto. Para encontrarlo, entra a la guía oficial [Regions and Availability Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm) y usa el valor de la columna **Region Identifier**. Por ejemplo, Bogotá aparece como `sa-bogota-1`.
 - `p_compartment_ocid`: reemplaza el texto `'<COMPARTMENT_OCID>'` completo por el OCID real de tu compartment. El valor final debe quedar entre comillas simples, por ejemplo `'ocid1.compartment.oc1..aaaaaaaa...'`.
 
 En otras palabras, los textos con formato `<...>` son marcadores de posición. Debes borrarlos y escribir tu valor real.
@@ -228,7 +232,7 @@ En otras palabras, los textos con formato `<...>` son marcadores de posición. D
 SET SERVEROUTPUT ON
 
 DECLARE
-  p_region           VARCHAR2(200) := 'us-chicago-1';
+  p_region           VARCHAR2(200) := 'us-ashburn-1';
   p_endpoint         VARCHAR2(500) := 'https://inference.generativeai.' || p_region || '.oci.oraclecloud.com';
   p_compartment_ocid VARCHAR2(200) := '<COMPARTMENT_OCID>';
 
@@ -315,11 +319,13 @@ CREATE TABLE IF NOT EXISTS TB_VECTOR_DATA (
 
 El siguiente bloque copia un PDF desde un bucket de OCI al directorio `DATA_PUMP_DIR` de la base de datos.
 
+La URL ya está incluida en el script para que puedas descargar el archivo del laboratorio directamente desde Object Storage.
+
 ```sql
 BEGIN
   DBMS_CLOUD.GET_OBJECT(
     credential_name => 'OCI_CRED',
-    object_uri      => 'https://objectstorage.us-chicago-1.oraclecloud.com/n/idi1o0a010nx/b/labs/o/relatorelato-a.pdf',
+    object_uri      => 'https://objectstorage.us-ashburn-1.oraclecloud.com/p/NxcJA0hgEKQV7ndrzs1HqdlgjcPLURYS2sdt53TyDkKaiaBwylzhGAmqwQoXjtP5/n/idkrkto5fyu8/b/relato/o/relatorelato-a.pdf',
     directory_name  => 'DATA_PUMP_DIR'
   );
 END;
@@ -334,11 +340,13 @@ El flujo es el siguiente: primero se copia el archivo `.onnx` a un directorio de
 
 ![Flujo para registrar e invocar un modelo ONNX en Oracle Database](images/onnx_model_flow.svg)
 
+La URL ya está incluida en el script para que puedas descargar el modelo del laboratorio directamente desde Object Storage.
+
 ```sql
 BEGIN
   DBMS_CLOUD.GET_OBJECT(
     credential_name => 'OCI_CRED',
-    object_uri      => 'https://objectstorage.us-chicago-1.oraclecloud.com/n/idi1o0a010nx/b/labs/o/modeall-MiniLM-L6.onnx',
+    object_uri      => 'https://objectstorage.us-ashburn-1.oraclecloud.com/p/mfk5C5kdG5b787Y9-XYsCHhTOEt3oIEeHhK-8A7K5F1E9N2gq1vNehuMpIhj-WjF/n/idkrkto5fyu8/b/relato/o/modeall-MiniLM-L6.onnx',
     directory_name  => 'DATA_PUMP_DIR'
   );
 END;
@@ -443,19 +451,19 @@ La siguiente función automatiza el flujo RAG:
 
 <u>Antes de ejecutar:</u> revisa de nuevo `p_region` y `p_compartment_ocid`.
 
-- Si estás usando la región Chicago, puedes dejar `p_region := 'us-chicago-1';`.
-- Si estás usando otra región, cambia `'us-chicago-1'` por el **Region Identifier** correspondiente. Puedes consultarlo en [Regions and Availability Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm).
+- Si estás usando la región Ashburn, puedes dejar `p_region := 'us-ashburn-1';`.
+- Si estás usando otra región, cambia `'us-ashburn-1'` por el **Region Identifier** correspondiente. Puedes consultarlo en [Regions and Availability Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm).
 - Cambia `'<COMPARTMENT_OCID>'` por el OCID real de tu compartment, manteniendo las comillas simples.
 
 ```sql
-CREATE OR REPLACE EDITIONABLE FUNCTION ADMIN.GENERATE_TEXT_RESPONSE_GEN (
+CREATE OR REPLACE EDITIONABLE FUNCTION GENERATE_TEXT_RESPONSE_GEN (
   p_user_question VARCHAR2
 ) RETURN CLOB IS
 
   messages    CLOB := EMPTY_CLOB();
   output_text CLOB := EMPTY_CLOB();
 
-  p_region           VARCHAR2(200) := 'us-chicago-1';
+  p_region           VARCHAR2(200) := 'us-ashburn-1';
   p_endpoint         VARCHAR2(200) := 'https://inference.generativeai.' || p_region || '.oci.oraclecloud.com';
   p_compartment_ocid VARCHAR2(200) := '<COMPARTMENT_OCID>';
 
@@ -499,7 +507,7 @@ BEGIN
       JSON_OBJECT(
         'compartmentId' VALUE p_compartment_ocid,
         'servingMode' VALUE JSON_OBJECT(
-          'modelId' VALUE 'meta.llama-4-maverick-17b-128e-instruct-fp8',
+          'modelId' VALUE 'google.gemini-2.5-flash',
           'servingType' VALUE 'ON_DEMAND'
         ),
         'chatRequest' VALUE JSON_OBJECT(
@@ -588,7 +596,7 @@ Si algo falla, revisa primero estos puntos:
 | --- | --- | --- |
 | Error al crear `OCI_CRED` | OCID, fingerprint o llave privada incorrectos | Revisa la API key y copia la llave PEM completa |
 | Error al llamar a Generative AI | Falta permiso de red o política de OCI | Revisa el paso 2.1 y la política del compartment |
-| No se descarga el PDF o el modelo | La credencial no tiene acceso a Object Storage | Valida `OCI_CRED` y el `object_uri` |
+| No se descarga el PDF o el modelo | URL vencida, región distinta o acceso al objeto no disponible | Valida que la URL de Object Storage abra en el navegador y que corresponda a `us-ashburn-1` |
 | La búsqueda semántica no devuelve resultados | No se insertaron vectores | Verifica que `TB_VECTOR_DATA` tenga registros |
 | La función devuelve error JSON | El modelo no respondió con el formato esperado | Revisa la respuesta completa devuelta por `DBMS_CLOUD.GET_RESPONSE_TEXT` |
 
