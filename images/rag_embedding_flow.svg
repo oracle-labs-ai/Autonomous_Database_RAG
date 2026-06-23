@@ -1,0 +1,104 @@
+<svg width="1280" height="620" viewBox="0 0 1280 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Flujo RAG con embeddings en Oracle Autonomous Database</title>
+  <desc id="desc">Flujo en dos filas: la pregunta se convierte en vector usando un servicio de embeddings; luego Autonomous Database compara ese vector con vectores almacenados, recupera contexto y lo envía a Generative AI para producir una respuesta.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#355967"/>
+    </marker>
+    <filter id="shadow" x="-16%" y="-20%" width="132%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#28434a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .label { font-family: Arial, Helvetica, sans-serif; fill: #203033; }
+      .title { font-size: 24px; font-weight: 700; }
+      .object-title { font-size: 21px; font-style: italic; fill: #26393d; }
+      .service-title { font-size: 18px; font-weight: 700; }
+      .body { font-size: 16px; }
+      .small { font-size: 14px; fill: #52676d; }
+      .tiny { font-size: 12px; fill: #52676d; }
+      .region { fill: #fbfdfc; stroke: #d9e8e4; stroke-width: 1.5; }
+      .object { filter: url(#shadow); stroke-width: 1.1; }
+      .question { fill: #f8dfef; stroke: #edc7df; }
+      .vector { fill: #eef3ff; stroke: #d9e2ff; }
+      .context { fill: #edf8f4; stroke: #cce7dd; }
+      .answer { fill: #f8ebd7; stroke: #ecd3aa; }
+      .service { filter: url(#shadow); stroke-width: 1.2; }
+      .ml { fill: #bddfd2; stroke: #83b9a7; }
+      .database { fill: #c9e1e3; stroke: #86afb5; }
+      .genai { fill: #cfb9dc; stroke: #a583b4; }
+      .arrow { fill: none; stroke: #355967; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .muted-arrow { fill: none; stroke: #86a6ad; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1280" height="620" fill="#ffffff"/>
+  <rect class="region" x="20" y="24" width="1240" height="572" rx="28"/>
+  <text class="label title" x="48" y="62">OCI Region</text>
+
+  <g id="question-object">
+    <text class="label object-title" x="72" y="118">pregunta</text>
+    <rect class="object question" x="72" y="140" width="270" height="92" rx="10"/>
+    <text class="label body" x="96" y="179">How expensive is it</text>
+    <text class="label body" x="96" y="204">to have a car?</text>
+  </g>
+
+  <g id="embedding-service">
+    <rect class="service ml" x="430" y="108" width="194" height="156" rx="36"/>
+    <image href="../icons/MachineLearning.png" x="495" y="128" width="64" height="61" preserveAspectRatio="xMidYMid meet"/>
+    <text class="label service-title" x="527" y="220" text-anchor="middle">Embedding model</text>
+  </g>
+
+  <g id="query-vector">
+    <text class="label object-title" x="720" y="118">vector de la pregunta</text>
+    <rect class="object vector" x="720" y="140" width="340" height="72" rx="10"/>
+    <text class="label body" x="890" y="182" text-anchor="middle">[0.12, 0.84, 0.12, 1.92, ..., 2.19]</text>
+  </g>
+
+  <g id="stored-vectors">
+    <text class="label object-title" x="72" y="336">vectores almacenados</text>
+    <rect class="object vector" x="72" y="360" width="300" height="50" rx="10"/>
+    <text class="label small" x="222" y="390" text-anchor="middle">[0.12, 0.84, 0.12, ..., 2.19]</text>
+    <rect class="object vector" x="72" y="424" width="300" height="50" rx="10"/>
+    <text class="label small" x="222" y="454" text-anchor="middle">[0.54, 0.24, 0.81, ..., 1.14]</text>
+    <rect class="object vector" x="72" y="488" width="300" height="50" rx="10"/>
+    <text class="label small" x="222" y="518" text-anchor="middle">[1.32, 0.54, 0.25, ..., 2.29]</text>
+  </g>
+
+  <g id="database-service">
+    <rect class="service database" x="450" y="368" width="300" height="146" rx="34"/>
+    <image href="../icons/AutonomousDatabase.png" x="482" y="404" width="64" height="55" preserveAspectRatio="xMidYMid meet"/>
+    <text class="label service-title" x="626" y="420" text-anchor="middle">Autonomous Database</text>
+    <text class="label small" x="626" y="452" text-anchor="middle">VECTOR_DISTANCE</text>
+    <text class="label small" x="626" y="476" text-anchor="middle">búsqueda semántica</text>
+  </g>
+
+  <g id="context-object">
+    <text class="label object-title" x="820" y="336">contexto recuperado</text>
+    <rect class="object context" x="820" y="360" width="250" height="154" rx="10"/>
+    <text class="label body" x="844" y="394">Fragmentos del PDF</text>
+    <text class="label tiny" x="844" y="424">But it didn't change much of China's</text>
+    <text class="label tiny" x="844" y="444">behavior and in many ways they</text>
+    <text class="label tiny" x="844" y="464">became more aggressive...</text>
+  </g>
+
+  <g id="genai-service">
+    <rect class="service genai" x="1120" y="342" width="108" height="140" rx="30"/>
+    <image href="../icons/GenerativeAI.png" x="1142" y="362" width="64" height="59" preserveAspectRatio="xMidYMid meet"/>
+    <text class="label service-title" x="1174" y="448" text-anchor="middle">Generative</text>
+    <text class="label service-title" x="1174" y="472" text-anchor="middle">AI</text>
+  </g>
+
+  <g id="answer-object">
+    <text class="label object-title" x="992" y="510">respuesta</text>
+    <rect class="object answer" x="992" y="522" width="236" height="48" rx="10"/>
+    <text class="label small" x="1110" y="551" text-anchor="middle">respuesta con contexto</text>
+  </g>
+
+  <path class="arrow" d="M342 186 H420"/>
+  <path class="arrow" d="M624 186 H710"/>
+  <path class="muted-arrow" d="M890 212 V300 H600 V358"/>
+  <path class="arrow" d="M372 449 H440"/>
+  <path class="arrow" d="M750 441 H810"/>
+  <path class="arrow" d="M1070 437 H1110"/>
+  <path class="arrow" d="M1174 482 V512"/>
+</svg>

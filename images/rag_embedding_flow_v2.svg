@@ -1,0 +1,104 @@
+<svg width="1280" height="560" viewBox="0 0 1280 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Flujo RAG con embeddings en Oracle Autonomous Database</title>
+  <desc id="desc">Diagrama que distingue objetos de datos y servicios: una pregunta se convierte en vector con un modelo de embeddings, se compara en Autonomous Database y se envía a Generative AI para responder.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b5963"/>
+    </marker>
+    <filter id="soft-shadow" x="-12%" y="-16%" width="124%" height="132%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#16333a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .label { font-family: Arial, Helvetica, sans-serif; fill: #1f2c2f; }
+      .region-title { font-size: 24px; font-weight: 700; fill: #20383b; }
+      .service-title { font-size: 20px; font-weight: 700; }
+      .object-title { font-size: 22px; font-style: italic; }
+      .body { font-size: 17px; }
+      .small { font-size: 15px; fill: #405457; }
+      .region { fill: #f8fbfa; stroke: #d8e5e2; stroke-width: 1.5; }
+      .service { stroke-width: 1.2; filter: url(#soft-shadow); }
+      .ml { fill: #bddfd2; stroke: #83b9a7; }
+      .database { fill: #c9dfe1; stroke: #86afb5; }
+      .genai { fill: #cbb6d7; stroke: #9c7aaa; }
+      .object { filter: url(#soft-shadow); stroke-width: 1.1; }
+      .question { fill: #f8dfef; stroke: #edc7df; }
+      .vector { fill: #edf2ff; stroke: #d9e2ff; }
+      .context { fill: #eef7f3; stroke: #cce5dc; }
+      .answer { fill: #f8ebd7; stroke: #ecd3aa; }
+      .arrow { fill: none; stroke: #3b5963; stroke-width: 3.5; stroke-linecap: round; marker-end: url(#arrow); }
+      .thin { stroke-width: 2.6; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="560" fill="#ffffff"/>
+  <path d="M0 0 H1280 V560 H0 Z" fill="#fbfdfc"/>
+  <rect class="region" x="20" y="24" width="1240" height="512" rx="28"/>
+  <text class="label region-title" x="46" y="62">OCI Region</text>
+
+  <g>
+    <text class="label object-title" x="74" y="119">pregunta</text>
+    <rect class="object question" x="74" y="142" width="270" height="104" rx="10"/>
+    <text class="label body" x="98" y="181">How expensive is it</text>
+    <text class="label body" x="98" y="207">to have a car?</text>
+  </g>
+
+  <g>
+    <rect class="service ml" x="456" y="116" width="190" height="178" rx="38"/>
+    <image href="../icons/MachineLearning.png" x="519" y="136" width="64" height="61" preserveAspectRatio="xMidYMid meet"/>
+    <text class="label service-title" x="551" y="235" text-anchor="middle">Embedding</text>
+    <text class="label service-title" x="551" y="262" text-anchor="middle">model</text>
+  </g>
+
+  <g>
+    <text class="label object-title" x="826" y="119">vector</text>
+    <rect class="object vector" x="826" y="142" width="300" height="70" rx="10"/>
+    <text class="label body" x="976" y="184" text-anchor="middle">[0.12, 0.84, 0.12, 1.92, ..., 2.19]</text>
+  </g>
+
+  <g>
+    <rect class="service database" x="474" y="342" width="284" height="142" rx="34"/>
+    <image href="../icons/AutonomousDatabase.png" x="506" y="373" width="64" height="55" preserveAspectRatio="xMidYMid meet"/>
+    <text class="label service-title" x="632" y="392" text-anchor="middle">Autonomous Database</text>
+    <text class="label small" x="632" y="423" text-anchor="middle">comparación de vectores</text>
+    <text class="label small" x="632" y="448" text-anchor="middle">búsqueda semántica</text>
+  </g>
+
+  <g>
+    <rect class="object context" x="72" y="330" width="306" height="154" rx="10"/>
+    <text class="label body" x="96" y="364">Fragmentos del PDF</text>
+    <text class="label small" x="96" y="394">But it didn't change much of China's behavior</text>
+    <text class="label small" x="96" y="416">and in many ways they became more aggressive.</text>
+    <text class="label small" x="96" y="438">But here's the thing, even with all the</text>
+    <text class="label small" x="96" y="460">economic downsides...</text>
+  </g>
+
+  <g>
+    <rect class="object vector" x="814" y="332" width="252" height="56" rx="10"/>
+    <text class="label small" x="940" y="366" text-anchor="middle">[0.12, 0.84, 0.12, ..., 2.19]</text>
+    <rect class="object vector" x="814" y="400" width="252" height="56" rx="10"/>
+    <text class="label small" x="940" y="434" text-anchor="middle">[0.54, 0.24, 0.81, ..., 1.14]</text>
+    <rect class="object vector" x="814" y="468" width="252" height="56" rx="10"/>
+    <text class="label small" x="940" y="502" text-anchor="middle">[1.32, 0.54, 0.25, ..., 2.29]</text>
+  </g>
+
+  <g>
+    <rect class="service genai" x="1114" y="318" width="126" height="166" rx="32"/>
+    <image href="../icons/GenerativeAI.png" x="1145" y="340" width="64" height="59" preserveAspectRatio="xMidYMid meet"/>
+    <text class="label service-title" x="1177" y="429" text-anchor="middle">Generative</text>
+    <text class="label service-title" x="1177" y="456" text-anchor="middle">AI</text>
+  </g>
+
+  <g>
+    <rect class="object answer" x="946" y="246" width="236" height="54" rx="10"/>
+    <text class="label small" x="1064" y="279" text-anchor="middle">respuesta con contexto</text>
+  </g>
+
+  <path class="arrow" d="M344 194 H446"/>
+  <path class="arrow" d="M646 194 H816"/>
+  <path class="arrow" d="M976 212 V322"/>
+  <path class="arrow" d="M804 428 H768"/>
+  <path class="arrow thin" d="M474 413 H388"/>
+  <path class="arrow" d="M758 390 H1104"/>
+  <path class="arrow" d="M1177 318 V310 H1196 V273 H1192"/>
+  <path class="arrow thin" d="M946 273 H810 V350"/>
+</svg>

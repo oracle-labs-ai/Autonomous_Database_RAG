@@ -16,51 +16,74 @@ Al finalizar el laboratorio tendrás:
 6. Una consulta final que responde preguntas sobre el 
 contenido de un PDF.
 
+# Búsqueda semántica (RAG) — pregunta → vector → distancia
+
 ```mermaid
-
 flowchart LR
-
-    S["sentence<br/><br/>How expensive it is going to be<br/>having a car?"] --> M(("embedding<br/>model"))
-
-    M --> V["[0.12, 0.84, 0.12, 1.92, ..., 2.19]<br/><br/>vector"]
-
-    classDef sentence fill:#FCE7F7,stroke:#F3C2E7,color:#111827,stroke-width:1px;
-
-    classDef model fill:#2F5D50,stroke:#2F5D50,color:#FFFFFF,stroke-width:2px;
-
-    classDef vector fill:#F3F6FF,stroke:#DDE5FF,color:#111827,stroke-width:1px;
-
-    class S sentence;
-
-    class M model;
-
-    class V vector;
-
-    linkStyle 0 stroke:#466A5D,stroke-width:2px;
-
-    linkStyle 1 stroke:#466A5D,stroke-width:2px;
-
+    A[">¿Qué le sucedió a la<br/>familia Gómez Ramirez?"] -->|embeddings 🕶️| B["[0.32, 0.12, 4.24, ..., 0.75]"]
+ 
+    B --> C1
+    B --> C2
+    B --> C3
+ 
+    subgraph KB["base de conocimiento"]
+        direction TB
+        C1["[0.12, 1.23, 2.24, ..., 1.26]"]
+        C2["[0.32, 0.12, 4.24, ..., 0.75]"]
+        C3["[0.98, 1.23, 1.24, ..., 0.46]"]
+    end
+ 
+    C1 -.->|distancia 0.34| D1["La familia Gómez Ramírez<br/>perdió su hogar en el incendio"]
+    C2 -.->|distancia 0.64| D2["El tren partió rumbo al sur<br/>antes del amanecer"]
+    C3 -.->|distancia 0.45| D3["Los vecinos evacuaron tras<br/>el aviso de tormenta"]
+ 
+    style A fill:#C8DFE0,stroke:#2B5D5A,color:#1A3A38
+    style B fill:#DDD8EC,stroke:#2B5D5A,color:#1A3A38
+    style C1 fill:#DDD8EC,stroke:#6A4A7A,color:#3A2A4A
+    style C2 fill:#DDD8EC,stroke:#6A4A7A,color:#3A2A4A
+    style C3 fill:#DDD8EC,stroke:#6A4A7A,color:#3A2A4A
+    style D1 fill:#C8DFE0,stroke:#1A3A38,color:#1A3A38
+    style D2 fill:#C8DFE0,stroke:#4A2A5A,color:#1A3A38
+    style D3 fill:#C8DFE0,stroke:#2A4A1A,color:#1A3A38
 ```
 
-## Antes de comenzar
+## Requisitos
 
-Este laboratorio inicia cuando ya tienes una **base de datos autónoma creada en OCI** y en estado **Available**.
+Para poder ejecutar este laboratorio es necesario contar con los siguientes prerrequisitos:
 
-Para evitar repetir pasos básicos, revisa primero las guías del repositorio de tutoriales de OCI:
+1. **Políticas** para autorizar a algunas instancias a consumir los servicios de ia
 
-1. [Creación de credenciales](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20credenciales.md)
-2. [Creación de un compartment](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20un%20compartment.md)
-3. [Creación de una política](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20una%20pol%C3%ADtica.md)
-4. [Crear base de datos autónoma](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Crear%20base%20de%20datos%20aut%C3%B3noma.md)
+    > Si no existe, podemos crear las políticas necesarias siguiendo [este tutorial](https://github.com/oracle-labs-ai/oci-console-tutorials/blob/main/Creaci%C3%B3n%20de%20una%20pol%C3%ADtica.md)
 
-<u>Importante:</u> si es tu primera vez usando OCI, completa esas guías antes de ejecutar los scripts de este laboratorio. Aquí se asume que ya tienes a mano estos datos:
+1. **Un compartment** que nos permitirá agrupar los recursos creados.
 
-- `user_ocid`
-- `tenancy_ocid`
-- `compartment_ocid`
-- `private_key`
-- `fingerprint`
-- Región de OCI, por ejemplo `us-chicago-1`
+    > Si no tenemos un compartmenr, podemos crear un compartment siguiendo [el siguiente tutorial](../oci-console-tutorials/Creación%20de%20un%20compartment.md).
+
+2. **Base de datos Oracle con capacidades de IA**
+    
+    Es necesario contar con una base de datos **Oracle Database 23ai o 26ai** que funcionará como base de conocimiento, puede ser de tipo:
+    
+    - Transaction Processing
+    - Data Warehouse
+
+    > Si no tenemos una base de datos, podemos crear una base de datos autonomous 26ai [siguiendo este tutorial](../oci-console-tutorials/Crear%20base%20de%20datos%20autónoma.md).
+    
+3. **Credenciales para acceso a servicios de Inteligencia Artificial**
+    
+    Es importante contar con un API Key creada en la cuenta de OCI que nos permitirán realizar solicitudes desde la base de datos a los servicios de inteligencia artificial.
+    
+    La configuración del API Key se ve de la siguiente manera.
+
+    ```docker
+    [DEFAULT]
+    user=ocid1.user.oc1..
+    fingerprint=24:
+    tenancy=ocid1.tenancy.
+    region=us-chicago-1
+    ```
+
+    > Si no tenemos credenciales, vamos a crear y descargar las credenciales [siguiendo este tutorial](../oci-console-tutorials/Creación%20de%20credenciales.md).
+    
 
 ## Paso 1: Ingresar a la consola SQL
 
