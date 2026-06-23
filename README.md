@@ -13,7 +13,34 @@ Al finalizar el laboratorio tendrás:
 3. Tablas para almacenar documentos y vectores.
 4. Un modelo ONNX cargado en la base de datos para generar embeddings.
 5. Una función SQL que combina búsqueda vectorial y Oracle Generative AI.
-6. Una consulta final que responde preguntas sobre el contenido de un PDF.
+6. Una consulta final que responde preguntas sobre el 
+contenido de un PDF.
+
+```mermaid
+
+flowchart LR
+
+    S["sentence<br/><br/>How expensive it is going to be<br/>having a car?"] --> M(("embedding<br/>model"))
+
+    M --> V["[0.12, 0.84, 0.12, 1.92, ..., 2.19]<br/><br/>vector"]
+
+    classDef sentence fill:#FCE7F7,stroke:#F3C2E7,color:#111827,stroke-width:1px;
+
+    classDef model fill:#2F5D50,stroke:#2F5D50,color:#FFFFFF,stroke-width:2px;
+
+    classDef vector fill:#F3F6FF,stroke:#DDE5FF,color:#111827,stroke-width:1px;
+
+    class S sentence;
+
+    class M model;
+
+    class V vector;
+
+    linkStyle 0 stroke:#466A5D,stroke-width:2px;
+
+    linkStyle 1 stroke:#466A5D,stroke-width:2px;
+
+```
 
 ## Antes de comenzar
 
@@ -193,7 +220,7 @@ BEGIN
       JSON_OBJECT(
         'compartmentId' VALUE p_compartment_ocid,
         'servingMode' VALUE JSON_OBJECT(
-          'modelId' VALUE 'meta.llama-4-maverick-17b-128e-instruct-fp8',
+          'modelId' VALUE 'google.gemini-2.5-flash',
           'servingType' VALUE 'ON_DEMAND'
         ),
         'chatRequest' VALUE JSON_OBJECT(
